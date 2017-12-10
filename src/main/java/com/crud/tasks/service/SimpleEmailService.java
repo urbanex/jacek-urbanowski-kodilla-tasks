@@ -35,7 +35,7 @@ public class SimpleEmailService {
         mailMessage.setSubject(mail.getSubject());
         mailMessage.setText(mail.getMessage());
 
-        if (!mail.getToCc().equals("")) {
+        if (mail.getToCc()!=null && !mail.getToCc().equals("")) {
             mailMessage.setCc(mail.getToCc());
             LOGGER.info("CC added!");
         } else {
