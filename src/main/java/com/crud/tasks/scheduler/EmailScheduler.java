@@ -13,7 +13,6 @@ public class EmailScheduler {
 
     private static final String SUBJECT = "Tasks: Daily mail";
 
-
     @Autowired
     private SimpleEmailService simpleEmailService;
 
