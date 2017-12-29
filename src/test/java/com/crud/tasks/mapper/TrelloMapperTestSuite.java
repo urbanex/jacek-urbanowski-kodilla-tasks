@@ -22,7 +22,6 @@ public class TrelloMapperTestSuite {
     @Autowired
     TrelloMapper trelloMapper;
 
-
     @Test
     public void mapToLists() {
         //given
