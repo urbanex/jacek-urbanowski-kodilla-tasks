@@ -35,10 +35,12 @@ public class DbServiceTestSuite {
 
     @Test
     public void shouldGetTask() {
+        //given
+        Task task1 = new Task(1L, "test_title1", "test_content1");
         //when
-        dbService.getAllTasks();
+        dbService.getTask(task1.getId());
         //then
-        verify(taskRepository, times(1)).findAll();
+        verify(taskRepository, times(1)).findById(1L);
     }
 
     @Test
