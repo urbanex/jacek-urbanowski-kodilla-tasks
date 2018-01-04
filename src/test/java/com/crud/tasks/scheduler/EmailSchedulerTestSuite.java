@@ -41,9 +41,8 @@ public class EmailSchedulerTestSuite {
         emailScheduler.sendInformationEmail();
         //then
         verify(taskRepository, times(1)).count();
-        assertEquals(20, taskRepository.count());
-        verify(simpleEmailService, times(1)).send(ArgumentMatchers.any(Mail.class));
+        verify(simpleEmailService, times(1)).send(new Mail("test@test.test",
+                "Tasks: Daily mail", "Currently in your database you have: 20 tasks."));
         verify(adminConfig, times(1)).getAdminMail();
-        assertEquals("test@test.test", adminConfig.getAdminMail());
     }
 }

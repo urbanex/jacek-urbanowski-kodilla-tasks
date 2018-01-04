@@ -151,9 +151,6 @@ public class TaskControllerTestSuite {
 
     @Test
     public void deleteTask() throws Exception {
-        //given
-        Task task = new Task(1L, "test_title", "test_content");
-
         //when & then
         mockMvc.perform(delete("/v1/task/deleteTask").param("taskId", "1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
