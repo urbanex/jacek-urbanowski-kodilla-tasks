@@ -24,6 +24,32 @@ public class SimpleEmailService {
     @Autowired
     private MailCreatorService mailCreatorService;
 
+    public void sendScheduledMail(final Mail mail) {
+        LOGGER.info("Starting email preparation...");
+        try {
+            javaMailSender.send(createScheduledMimeMessage(mail));
+            LOGGER.info("Scheduled email has been sent.");
+        } catch (MailException e) {
+            LOGGER.error("Failed to process scheduled email sending: " + e.getMessage(), e);
+        }
+    }
+
+    private MimeMessagePreparator createScheduledMimeMessage(final Mail mail) {
+        return mimeMessage -> {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            messageHelper.setTo(mail.getMailTo());
+            messageHelper.setSubject(mail.getSubject());
+            messageHelper.setText(mailCreatorService.tasksQuantityEmail(mail.getMessage()), true);
+
+            if (mail.getToCc()!=null && !mail.getToCc().equals("")) {
+                messageHelper.setCc(mail.getToCc());
+                LOGGER.info("CC added!");
+            } else {
+                LOGGER.info("CC not included!");
+            }
+        };
+    }
+
     public void send(final Mail mail) {
         LOGGER.info("Starting email preparation...");
         try {

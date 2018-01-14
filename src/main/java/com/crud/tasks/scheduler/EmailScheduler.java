@@ -22,10 +22,20 @@ public class EmailScheduler {
     @Autowired
     private AdminConfig adminConfig;
 
-    @Scheduled(cron = "0 0 10 * * *")
+
+    //stary mail scheduler
+/*    @Scheduled(cron = "0 0 10 * * *")
     public void sendInformationEmail() {
         long size = taskRepository.count();
         simpleEmailService.send(new Mail(adminConfig.getAdminMail(),
+                SUBJECT, "Currently in your database you have: " + size + (size == 1 ? " task." : " tasks.")));
+    }*/
+
+    //nowy mail scheduler
+    @Scheduled(cron = "0 */2 * * * *" )
+    public void sendInformationEmail() {
+        long size = taskRepository.count();
+        simpleEmailService.sendScheduledMail(new Mail(adminConfig.getAdminMail(),
                 SUBJECT, "Currently in your database you have: " + size + (size == 1 ? " task." : " tasks.")));
     }
 }
