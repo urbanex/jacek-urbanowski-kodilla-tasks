@@ -11,12 +11,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class SimpleEmailService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMailMessage.class);
+    private static final String NEW_TRELLO_CARD_MAIL = "New Card: ";
+    private static final String SCHEDULER_MAIL = "Currently in your database you have: ";
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -24,40 +24,15 @@ public class SimpleEmailService {
     @Autowired
     private MailCreatorService mailCreatorService;
 
-    public void sendScheduledMail(final Mail mail) {
-        LOGGER.info("Starting email preparation...");
-        try {
-            javaMailSender.send(createScheduledMimeMessage(mail));
-            LOGGER.info("Scheduled email has been sent.");
-        } catch (MailException e) {
-            LOGGER.error("Failed to process scheduled email sending: " + e.getMessage(), e);
-        }
-    }
-
-    private MimeMessagePreparator createScheduledMimeMessage(final Mail mail) {
-        return mimeMessage -> {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-            messageHelper.setTo(mail.getMailTo());
-            messageHelper.setSubject(mail.getSubject());
-            messageHelper.setText(mailCreatorService.tasksQuantityEmail(mail.getMessage()), true);
-
-            if (mail.getToCc()!=null && !mail.getToCc().equals("")) {
-                messageHelper.setCc(mail.getToCc());
-                LOGGER.info("CC added!");
-            } else {
-                LOGGER.info("CC not included!");
-            }
-        };
-    }
-
     public void send(final Mail mail) {
         LOGGER.info("Starting email preparation...");
         try {
-            //stara metoda wysylania maila:
-            //javaMailSender.send(createMailMessage(mail));
-            //a tutaj nowa:
             javaMailSender.send(createMimeMessage(mail));
-            LOGGER.info("Email has been sent.");
+            if (mail.getMessage().startsWith(NEW_TRELLO_CARD_MAIL)) {
+                LOGGER.info("Email reporting about new Trello Card has been sent successfully.");
+            } else if (mail.getMessage().startsWith(SCHEDULER_MAIL)) {
+                LOGGER.info("Scheduled email reporting about current quantity of tasks has been sent successfully.");
+            }
         } catch (MailException e) {
             LOGGER.error("Failed to process email sending: " + e.getMessage(), e);
         }
@@ -68,32 +43,18 @@ public class SimpleEmailService {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setTo(mail.getMailTo());
             messageHelper.setSubject(mail.getSubject());
-            messageHelper.setText(mailCreatorService.buildTrelloCardEmail(mail.getMessage()), true);
+
+            if (mail.getMessage().startsWith(NEW_TRELLO_CARD_MAIL)) {
+                messageHelper.setText(mailCreatorService.buildTrelloCardEmail(mail.getMessage()), true);
+            } else if (mail.getMessage().startsWith(SCHEDULER_MAIL)) {
+                messageHelper.setText(mailCreatorService.tasksQuantityEmail(mail.getMessage()), true);
+            }
 
             if (mail.getToCc()!=null && !mail.getToCc().equals("")) {
                 messageHelper.setCc(mail.getToCc());
-                LOGGER.info("CC added!");
-            } else {
-                LOGGER.info("CC not included!");
+                LOGGER.info("CC (carbon copy) included!");
             }
         };
     }
 
-    //stara metoda wysylania maila:
-
-/*   private SimpleMailMessage createMailMessage(final Mail mail) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(mail.getMailTo());
-        mailMessage.setSubject(mail.getSubject());
-        mailMessage.setText(mail.getMessage());
-
-        if (mail.getToCc()!=null && !mail.getToCc().equals("")) {
-            mailMessage.setCc(mail.getToCc());
-            LOGGER.info("CC added!");
-        } else {
-            LOGGER.info("CC not included!");
-        }
-
-        return mailMessage;
-    }*/
 }

@@ -25,7 +25,6 @@ public class MailCreatorService {
     private TemplateEngine templateEngine;
 
     public String buildTrelloCardEmail(String message) {
-
         List<String> functionality = new ArrayList<>();
         functionality.add("You can manage your tasks");
         functionality.add("Provides connection with Trello Board");
@@ -33,7 +32,8 @@ public class MailCreatorService {
 
         Context context = new Context();
         context.setVariable("message", message);
-        context.setVariable("tasks_url", "http://localhost:8888/tasks_frontend/");
+        context.setVariable("preview", firstThreeWords(message));
+        context.setVariable("tasks_url", "http://localhost:8888/tasks/");
         context.setVariable("button", "Visit website");
         context.setVariable("admin_name", adminConfig.getAdminName());
         context.setVariable("company_config", companyConfig);
@@ -45,12 +45,11 @@ public class MailCreatorService {
     }
 
     public String tasksQuantityEmail(String message) {
-
         Context context = new Context();
         context.setVariable("message", message);
         context.setVariable("preview", firstThreeWords(message));
-        context.setVariable("tasks_frontend_url", "http://localhost:8888/tasks_frontend/");
-        context.setVariable("tasks_backend_url", "http://localhost:8080/v1/task/getTasks/");
+        context.setVariable("tasks_frontend_url", "http://localhost:8888/tasks/");
+        context.setVariable("tasks_backend_url", "http://localhost:8080/v1/tasks/");
         context.setVariable("button1", "Visit website!");
         context.setVariable("button2", "Look indirectly at JSON objects!");
         context.setVariable("admin_name", adminConfig.getAdminName());
@@ -62,5 +61,6 @@ public class MailCreatorService {
     private String firstThreeWords(String message) {
         String[] words = message.split(" ");
         return words[0] + " " + words[1] + " " + words[2] + "...";
-     }
+    }
+
 }
