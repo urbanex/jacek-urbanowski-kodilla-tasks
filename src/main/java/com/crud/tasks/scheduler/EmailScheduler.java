@@ -3,6 +3,7 @@ package com.crud.tasks.scheduler;
 import com.crud.tasks.config.AdminConfig;
 import com.crud.tasks.domain.Mail;
 import com.crud.tasks.repository.TaskRepository;
+import com.crud.tasks.service.EmailType;
 import com.crud.tasks.service.SimpleEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,7 +33,7 @@ public class EmailScheduler {
     public void sendInformationEmail() {
         long size = taskRepository.count();
         simpleEmailService.send(new Mail(adminConfig.getAdminMail(),
-                SUBJECT, "Currently in your database you have: " + size + (size == 1 ? " task." : " tasks.")));
+                SUBJECT, "Currently in your database you have: " + size + (size == 1 ? " task." : " tasks.")), EmailType.SCHEDULED_MAIL);
     }
 
 }

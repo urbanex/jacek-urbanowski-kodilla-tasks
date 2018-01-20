@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 public class SimpleEmailService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMailMessage.class);
-    private static final String NEW_TRELLO_CARD_MAIL = "New Card: ";
-    private static final String SCHEDULER_MAIL = "Currently in your database you have: ";
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -24,13 +22,13 @@ public class SimpleEmailService {
     @Autowired
     private MailCreatorService mailCreatorService;
 
-    public void send(final Mail mail) {
+    public void send(final Mail mail, EmailType emailType) {
         LOGGER.info("Starting email preparation...");
         try {
-            javaMailSender.send(createMimeMessage(mail));
-            if (mail.getMessage().startsWith(NEW_TRELLO_CARD_MAIL)) {
+            javaMailSender.send(createMimeMessage(mail, emailType));
+            if (emailType == EmailType.TRELLO_CARD_MAIL) {
                 LOGGER.info("Email reporting about new Trello Card has been sent successfully.");
-            } else if (mail.getMessage().startsWith(SCHEDULER_MAIL)) {
+            } else if (emailType == EmailType.SCHEDULED_MAIL) {
                 LOGGER.info("Scheduled email reporting about current quantity of tasks has been sent successfully.");
             }
         } catch (MailException e) {
@@ -38,15 +36,15 @@ public class SimpleEmailService {
         }
     }
 
-    private MimeMessagePreparator createMimeMessage(final Mail mail) {
+    private MimeMessagePreparator createMimeMessage(final Mail mail, EmailType emailType) {
         return mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setTo(mail.getMailTo());
             messageHelper.setSubject(mail.getSubject());
 
-            if (mail.getMessage().startsWith(NEW_TRELLO_CARD_MAIL)) {
+            if (emailType == EmailType.TRELLO_CARD_MAIL) {
                 messageHelper.setText(mailCreatorService.buildTrelloCardEmail(mail.getMessage()), true);
-            } else if (mail.getMessage().startsWith(SCHEDULER_MAIL)) {
+            } else if (emailType == EmailType.SCHEDULED_MAIL)  {
                 messageHelper.setText(mailCreatorService.tasksQuantityEmail(mail.getMessage()), true);
             }
 
