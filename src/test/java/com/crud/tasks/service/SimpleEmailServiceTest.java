@@ -1,7 +1,6 @@
 package com.crud.tasks.service;
 
 import com.crud.tasks.domain.Mail;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,13 +13,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
-import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import java.util.Enumeration;
+import java.io.IOException;
 import java.util.Properties;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -112,15 +111,11 @@ public class SimpleEmailServiceTest {
         comparingHeaders(actualMimeMessage, expectedMimeMessage);
     }
 
-    public static void comparingHeaders(MimeMessage actualMimeMessage, MimeMessage expectedMimeMessage) throws MessagingException {
-        final Enumeration<Header> actualAllHeaders = actualMimeMessage.getAllHeaders();
-        final Enumeration<Header> expectedAllHeaders = expectedMimeMessage.getAllHeaders();
-        while (actualAllHeaders.hasMoreElements() && expectedAllHeaders.hasMoreElements()) {
-            final Header actualHeader = actualAllHeaders.nextElement();
-            final Header expectedHeader = expectedAllHeaders.nextElement();
-            assertEquals(expectedHeader.getName(), actualHeader.getName());
-            assertEquals(expectedHeader.getValue(), actualHeader.getValue());
-        }
+    public static void comparingHeaders(MimeMessage actualMimeMessage, MimeMessage expectedMimeMessage) throws MessagingException, IOException {
+        assertEquals(actualMimeMessage.getDataHandler().getContent(),expectedMimeMessage.getDataHandler().getContent());
+        assertArrayEquals(actualMimeMessage.getHeader("To"), expectedMimeMessage.getHeader("To"));
+        assertArrayEquals(actualMimeMessage.getHeader("Cc"), expectedMimeMessage.getHeader("Cc"));
+        assertArrayEquals(actualMimeMessage.getHeader("Subject"), expectedMimeMessage.getHeader("Subject"));
     }
 
 }
