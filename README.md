@@ -1,1 +1,1 @@
-# jacek-urbanowski-tasks
+# jacek-urbanowski-kodilla-tasks
